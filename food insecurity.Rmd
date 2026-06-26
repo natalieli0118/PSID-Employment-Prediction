@@ -1,0 +1,71 @@
+---
+title: "food insecurity"
+author: "Quinn"
+date: "2026-06-05"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+```{r}
+source("/Users/natalieli/Desktop/ECON484 Project/FoodInsecurity_Unemployment (1).R")
+```
+
+## Main Results
+
+```{r}
+dml_result <- data.frame(
+  Model = "Double ML",
+  ATE = round(irm$coef, 4),
+  SE = round(irm$se, 4),
+  p_value = round(irm$pval, 4)
+)
+
+knitr::kable(dml_result, caption = "ATE of 2021 SNAP receipt on 2023 unemployment")
+```
+
+## Descriptive Statistics
+
+```{r}
+desc <- data.frame(
+  N = nrow(d),
+  Unemployment_Rate = mean(d$unemployed),
+  SNAP_2021_Rate = mean(d$foodstamp_2021),
+  Mean_Education_Years = mean(d$educ_yrs_2021),
+  Mean_Age = mean(d$age_2021)
+)
+
+knitr::kable(desc, digits = 3)
+```
+
+## Graphs
+
+```{r}
+library(ggplot2)
+
+ggplot(d, aes(x = factor(foodstamp_2021), y = unemployed)) +
+  stat_summary(fun = mean, geom = "bar") +
+  labs(
+    title = "2023 Unemployment Rate by 2021 SNAP Receipt",
+    x = "Family received SNAP in 2021",
+    y = "Unemployment rate in 2023"
+  ) +
+  theme_minimal()
+```
+
+```{r}
+ggplot(d, aes(x = educ_yrs_2021, y = unemployed)) +
+  geom_jitter(height = 0.03, alpha = 0.3) +
+  geom_smooth(method = "lm") +
+  labs(
+    title = "Education and 2023 Unemployment",
+    x = "Years of education in 2021",
+    y = "Unemployed in 2023"
+  ) +
+  theme_minimal()
+```
+```

@@ -1,0 +1,138 @@
+---
+title: "dml"
+author: "Shun"
+date: "2026-06-05"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+# Run DML Analysis
+
+```{r}
+source("dml_analysis (1).R")
+```
+
+# Main Results
+
+```{r}
+knitr::kable(
+  best[,c(
+    "group",
+    "treatment",
+    "learner",
+    "ATE",
+    "SE",
+    "p_value",
+    "sig"
+  )],
+  caption = "Best DML Results by Treatment"
+)
+```
+
+# Full Results
+
+```{r}
+knitr::kable(
+  results_df[,c(
+    "group",
+    "treatment",
+    "learner",
+    "ATE",
+    "SE",
+    "p_value"
+  )],
+  caption = "All DML Estimates"
+)
+```
+
+# Figure 1: ATE Estimates
+
+```{r}
+library(ggplot2)
+
+ggplot(
+  best,
+  aes(
+    x = reorder(treatment, ATE),
+    y = ATE,
+    fill = group
+  )
+) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "Estimated Treatment Effects",
+    x = "",
+    y = "ATE"
+  ) +
+  theme_minimal()
+```
+
+# Figure 2: P-values
+
+```{r}
+ggplot(
+  best,
+  aes(
+    x = reorder(treatment, p_value),
+    y = p_value,
+    fill = group
+  )
+) +
+  geom_col() +
+  geom_hline(
+    yintercept = 0.05,
+    linetype = "dashed"
+  ) +
+  coord_flip() +
+  labs(
+    title = "Statistical Significance",
+    x = "",
+    y = "P-value"
+  ) +
+  theme_minimal()
+```
+
+# Figure 3: Model Comparison
+
+```{r}
+ggplot(
+  results_df,
+  aes(
+    learner,
+    mse_outcome,
+    fill = learner
+  )
+) +
+  geom_boxplot() +
+  labs(
+    title = "Outcome Nuisance MSE by Learner",
+    x = "",
+    y = "MSE"
+  ) +
+  theme_minimal()
+```
+
+# Interpretation
+
+The table above reports Double Machine Learning estimates of the relationship between employment outcomes and three groups of predictors:
+
+1. Health and Social Factors
+2. Financial Responsibility
+3. Lagged Wellbeing
+
+For each treatment variable, the learner with the lowest nuisance-model MSE was selected as the preferred specification.
+
+```
+
